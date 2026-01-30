@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Math Tools | FarMath</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="logo">FarMath</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="math-tools.html">Math Tools</a>
+      <a href="civil-tools.html">Civil Tools</a>
+      <a href="study-notes.html">Study Notes</a>
+      <a href="about.html">About</a>
+      <button id="themeToggle">🌙</button>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <h1>Unit Converter</h1>
+    <p class="subtitle">Learn units by converting, remembering, and testing yourself.</p>
+
+    <!-- TOOL -->
+    <section>
+      <h2>Length Converter</h2>
+      <input id="lengthInput" type="number" placeholder="Enter value">
+      <select id="fromUnit">
+        <option value="m">Meter</option>
+        <option value="cm">Centimeter</option>
+        <option value="km">Kilometer</option>
+        <option value="ft">Feet</option>
+      </select>
+      →
+      <select id="toUnit">
+        <option value="m">Meter</option>
+        <option value="cm">Centimeter</option>
+        <option value="km">Kilometer</option>
+        <option value="ft">Feet</option>
+      </select>
+      <button onclick="convertLength()">Convert</button>
+
+      <p id="result"></p>
+    </section>
+
+    <!-- FLASHCARDS -->
+    <section>
+      <h2>Flashcards (Remember the tricks)</h2>
+      <ul>
+        <li>1 m = 100 cm</li>
+        <li>1 km = 1000 m</li>
+        <li>1 m ≈ 3.28 ft</li>
+        <li>To go m → km, divide by 1000</li>
+      </ul>
+    </section>
+
+    <!-- QUIZ -->
+    <section>
+      <h2>Quick Quiz</h2>
+      <p><strong>Q:</strong> 500 cm equals how many meters?</p>
+      <button onclick="checkAnswer(5)">5 m</button>
+      <button onclick="checkAnswer(50)">50 m</button>
+      <button onclick="checkAnswer(0.5)">0.5 m</button>
+
+      <p id="quizResult"></p>
+    </section>
+  </main>
+
+  <script src="js/theme.js"></script>
+  <script src="js/math-tools.js"></script>
+</body>
+</html>
