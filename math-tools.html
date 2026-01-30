@@ -7,93 +7,70 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <header class="topbar">
-    <div class="logo">FarMath</div>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="math-tools.html">Math Tools</a>
-      <a href="civil-tools.html">Civil Tools</a>
-      <a href="study-notes.html">Study Notes</a>
-      <a href="about.html">About</a>
-      <button id="themeToggle">🌙</button>
-    </nav>
-  </header>
+<header class="topbar">
+  <div class="logo">FarMath</div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="math-tools.html">Math Tools</a>
+    <a href="civil-tools.html">Civil Tools</a>
+    <a href="study-notes.html">Study Notes</a>
+    <a href="about.html">About</a>
+    <button id="themeToggle">🌙</button>
+  </nav>
+</header>
 
-  <main class="hero">
-    <h1>Unit Converter</h1>
-    <p class="subtitle">
-      Learn units by converting, remembering, and testing yourself.
-    </p>
+<main class="hero">
+<h1>Unit Converter</h1>
+<p class="subtitle">Do → Remember → Test</p>
 
-    <!-- TOOL -->
-    <section>
-      <h2>Length Converter</h2>
-      <input id="lengthInput" type="number" placeholder="Enter value">
-      <select id="fromUnit">
-        <option value="m">Meter</option>
-        <option value="cm">Centimeter</option>
-        <option value="km">Kilometer</option>
-        <option value="ft">Feet</option>
-      </select>
-      →
-      <select id="toUnit">
-        <option value="m">Meter</option>
-        <option value="cm">Centimeter</option>
-        <option value="km">Kilometer</option>
-        <option value="ft">Feet</option>
-      </select>
-      <button onclick="convertLength()">Convert</button>
-      <p id="result"></p>
-    </section>
+<section>
+<h2>Length Converter</h2>
+<input id="lengthInput" type="number" placeholder="Enter value">
+<select id="fromUnit"><option value="m">m</option><option value="cm">cm</option><option value="km">km</option><option value="ft">ft</option></select>
+→
+<select id="toUnit"><option value="m">m</option><option value="cm">cm</option><option value="km">km</option><option value="ft">ft</option></select>
+<button onclick="convertLength()">Convert</button>
+<p id="result"></p>
+</section>
 
-    <!-- FLASHCARDS -->
-    <section>
-      <h2>Flashcards (Click to flip)</h2>
-      <div class="flashcards">
+<section>
+<h2>Flashcards (Click to flip)</h2>
+<div class="flashcards">
 
-        <div class="flashcard" onclick="flipCard(this)">
-          <div class="flashcard-inner">
-            <div class="flashcard-face">
-              How many centimeters are in 1 meter?
-            </div>
-            <div class="flashcard-face flashcard-back">
-              1 meter = 100 centimeters
-            </div>
-          </div>
-        </div>
+<div class="flashcard" onclick="flipCard(this)">
+<div class="flashcard-inner">
+<div class="flashcard-face">💡 FAST TRICK: cm → m</div>
+<div class="flashcard-face flashcard-back">Just divide by 100</div>
+</div></div>
 
-        <div class="flashcard" onclick="flipCard(this)">
-          <div class="flashcard-inner">
-            <div class="flashcard-face">
-              Kilometer to meter conversion?
-            </div>
-            <div class="flashcard-face flashcard-back">
-              1 kilometer = 1000 meters
-            </div>
-          </div>
-        </div>
+<div class="flashcard" onclick="flipCard(this)">
+<div class="flashcard-inner">
+<div class="flashcard-face">🧠 EXAM HACK: m → ft</div>
+<div class="flashcard-face flashcard-back">Multiply by 3.28</div>
+</div></div>
 
-      </div>
-    </section>
+<div class="flashcard" onclick="flipCard(this)">
+<div class="flashcard-inner">
+<div class="flashcard-face">⚡ SPEED RULE: m → km</div>
+<div class="flashcard-face flashcard-back">Divide by 1000</div>
+</div></div>
 
-    <!-- QUIZ -->
-    <section>
-      <h2>Quick Quiz</h2>
-      <p><strong>Q:</strong> 500 cm equals how many meters?</p>
+</div>
+</section>
 
-      <button onclick="answerQuiz(true)">5 m</button>
-      <button onclick="answerQuiz(false)">50 m</button>
-      <button onclick="answerQuiz(false)">0.5 m</button>
+<section>
+<h2>Quiz (5 Random Questions)</h2>
+<p id="quizQ"></p>
+<button id="opt0"></button>
+<button id="opt1"></button>
+<button id="opt2"></button>
+<p id="quizResult"></p>
+<p id="scoreBox"></p>
+</section>
 
-      <p id="quizResult"></p>
-      <p id="scoreBox">Score: 0 / 1</p>
+</main>
 
-      <button onclick="resetQuiz()">Reset Quiz</button>
-    </section>
-
-  </main>
-
-  <script src="js/theme.js"></script>
-  <script src="js/math-tools.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/math-tools.js"></script>
 </body>
 </html>
