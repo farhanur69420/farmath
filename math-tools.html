@@ -43,7 +43,6 @@
         <option value="ft">Feet</option>
       </select>
       <button onclick="convertLength()">Convert</button>
-
       <p id="result"></p>
     </section>
 
@@ -74,40 +73,24 @@
           </div>
         </div>
 
-        <div class="flashcard" onclick="flipCard(this)">
-          <div class="flashcard-inner">
-            <div class="flashcard-face">
-              Trick: meter to feet
-            </div>
-            <div class="flashcard-face flashcard-back">
-              Multiply meters by 3.28
-            </div>
-          </div>
-        </div>
-
-        <div class="flashcard" onclick="flipCard(this)">
-          <div class="flashcard-inner">
-            <div class="flashcard-face">
-              Quick trick: m → km
-            </div>
-            <div class="flashcard-face flashcard-back">
-              Divide by 1000
-            </div>
-          </div>
-        </div>
-
       </div>
     </section>
 
-    <!-- QUIZ (unchanged for now) -->
+    <!-- QUIZ -->
     <section>
       <h2>Quick Quiz</h2>
       <p><strong>Q:</strong> 500 cm equals how many meters?</p>
-      <button onclick="checkAnswer(5)">5 m</button>
-      <button onclick="checkAnswer(50)">50 m</button>
-      <button onclick="checkAnswer(0.5)">0.5 m</button>
+
+      <button onclick="answerQuiz(true)">5 m</button>
+      <button onclick="answerQuiz(false)">50 m</button>
+      <button onclick="answerQuiz(false)">0.5 m</button>
+
       <p id="quizResult"></p>
+      <p id="scoreBox">Score: 0 / 1</p>
+
+      <button onclick="resetQuiz()">Reset Quiz</button>
     </section>
+
   </main>
 
   <script src="js/theme.js"></script>

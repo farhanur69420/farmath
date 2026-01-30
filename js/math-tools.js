@@ -1,3 +1,6 @@
+/* =========================
+   UNIT CONVERTER
+========================= */
 function convertLength() {
   const value = parseFloat(document.getElementById("lengthInput").value);
   const from = document.getElementById("fromUnit").value;
@@ -20,15 +23,37 @@ function convertLength() {
     `${value} ${from} = ${result.toFixed(4)} ${to}`;
 }
 
-function checkAnswer(answer) {
-  const result = document.getElementById("quizResult");
-  if (answer === 5) {
-    result.textContent = "✅ Correct! 500 cm = 5 m";
-  } else {
-    result.textContent = "❌ Incorrect. Try again.";
-  }
-}
-
+/* =========================
+   FLASHCARDS
+========================= */
 function flipCard(card) {
   card.classList.toggle("flipped");
 }
+
+/* =========================
+   QUIZ SYSTEM
+========================= */
+let score = 0;
+let answered = false;
+
+function answerQuiz(isCorrect) {
+  if (answered) return;
+
+  const feedback = document.getElementById("quizResult");
+  const scoreBox = document.getElementById("scoreBox
+
+cat > /tmp/quiz.html << 'EOF'
+<section>
+  <h2>Quick Quiz</h2>
+
+  <p><strong>Q:</strong> 500 cm equals how many meters?</p>
+
+  <button onclick="answerQuiz(true)">5 m</button>
+  <button onclick="answerQuiz(false)">50 m</button>
+  <button onclick="answerQuiz(false)">0.5 m</button>
+
+  <p id="quizResult"></p>
+  <p id="scoreBox">Score: 0 / 1</p>
+
+  <button onclick="resetQuiz()">Reset Quiz</button>
+</section>
