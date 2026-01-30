@@ -128,3 +128,26 @@ nav button {
   background: var(--accent);
   color: white;
 }
+
+/* Quiz */
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.quiz-options button {
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--accent);
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.quiz-options button:hover {
+  background: var(--accent);
+  color: white;
+}

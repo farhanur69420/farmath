@@ -26,9 +26,19 @@
 <section>
 <h2>Length Converter</h2>
 <input id="lengthInput" type="number" placeholder="Enter value">
-<select id="fromUnit"><option value="m">m</option><option value="cm">cm</option><option value="km">km</option><option value="ft">ft</option></select>
-→
-<select id="toUnit"><option value="m">m</option><option value="cm">cm</option><option value="km">km</option><option value="ft">ft</option></select>
+<select id="fromUnit">
+  <option value="m">m</option>
+  <option value="cm">cm</option>
+  <option value="km">km</option>
+  <option value="ft">ft</option>
+</select>
+ →
+<select id="toUnit">
+  <option value="m">m</option>
+  <option value="cm">cm</option>
+  <option value="km">km</option>
+  <option value="ft">ft</option>
+</select>
 <button onclick="convertLength()">Convert</button>
 <p id="result"></p>
 </section>
@@ -36,34 +46,32 @@
 <section>
 <h2>Flashcards (Click to flip)</h2>
 <div class="flashcards">
-
-<div class="flashcard" onclick="flipCard(this)">
-<div class="flashcard-inner">
-<div class="flashcard-face">💡 FAST TRICK: cm → m</div>
-<div class="flashcard-face flashcard-back">Just divide by 100</div>
-</div></div>
-
-<div class="flashcard" onclick="flipCard(this)">
-<div class="flashcard-inner">
-<div class="flashcard-face">🧠 EXAM HACK: m → ft</div>
-<div class="flashcard-face flashcard-back">Multiply by 3.28</div>
-</div></div>
-
-<div class="flashcard" onclick="flipCard(this)">
-<div class="flashcard-inner">
-<div class="flashcard-face">⚡ SPEED RULE: m → km</div>
-<div class="flashcard-face flashcard-back">Divide by 1000</div>
-</div></div>
-
+  <div class="flashcard" onclick="flipCard(this)">
+    <div class="flashcard-inner">
+      <div class="flashcard-face">💡 FAST TRICK: cm → m</div>
+      <div class="flashcard-face flashcard-back">Divide by 100</div>
+    </div>
+  </div>
+  <div class="flashcard" onclick="flipCard(this)">
+    <div class="flashcard-inner">
+      <div class="flashcard-face">🧠 EXAM HACK: m → ft</div>
+      <div class="flashcard-face flashcard-back">Multiply by 3.28</div>
+    </div>
+  </div>
 </div>
 </section>
 
 <section>
 <h2>Quiz (5 Random Questions)</h2>
+
 <p id="quizQ"></p>
-<button id="opt0"></button>
-<button id="opt1"></button>
-<button id="opt2"></button>
+
+<div class="quiz-options">
+  <button id="opt0"></button>
+  <button id="opt1"></button>
+  <button id="opt2"></button>
+</div>
+
 <p id="quizResult"></p>
 <p id="scoreBox"></p>
 </section>

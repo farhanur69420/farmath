@@ -26,31 +26,31 @@ function flipCard(card) {
 }
 
 /* =========================
-   QUIZ ENGINE (RANDOMIZED)
+   QUIZ ENGINE
 ========================= */
 
 const questions = [
   {
-    q: "Quick trick: 500 cm equals?",
+    q: "500 cm equals?",
     options: ["5 m", "50 m", "0.5 m"],
     answer: 0,
-    explain: "Divide by 100. 500 ÷ 100 = 5 m."
+    explain: "Divide by 100 → 500 ÷ 100 = 5 m."
   },
   {
-    q: "1 kilometer is equal to?",
+    q: "1 kilometer equals?",
     options: ["100 m", "1000 m", "10,000 m"],
     answer: 1,
-    explain: "1 km = 1000 meters."
+    explain: "1 km = 1000 m."
   },
   {
-    q: "Best mental shortcut: meters → km?",
-    options: ["Multiply by 1000", "Divide by 100", "Divide by 1000"],
+    q: "Meters to kilometers?",
+    options: ["×1000", "÷100", "÷1000"],
     answer: 2,
-    explain: "Meters to kilometers → divide by 1000."
+    explain: "Meters → km: divide by 1000."
   },
   {
-    q: "1 meter is approximately?",
-    options: ["1.8 ft", "3.28 ft", "10 ft"],
+    q: "1 meter ≈ ? feet",
+    options: ["1.8", "3.28", "10"],
     answer: 1,
     explain: "Very common trick: 1 m ≈ 3.28 ft."
   },
@@ -58,37 +58,39 @@ const questions = [
     q: "250 cm equals?",
     options: ["2.5 m", "25 m", "0.25 m"],
     answer: 0,
-    explain: "Divide by 100 → 250 cm = 2.5 m."
+    explain: "250 ÷ 100 = 2.5 m."
   }
 ];
 
-let current = 0;
+let quizOrder = [];
+let currentQ = 0;
 let score = 0;
-let shuffled = [];
 
 function startQuiz() {
-  shuffled = questions.sort(() => 0.5 - Math.random()).slice(0,5);
-  current = 0;
+  quizOrder = [...questions].sort(() => Math.random() - 0.5);
+  currentQ = 0;
   score = 0;
-  loadQuestion();
+  showQuestion();
 }
 
-function loadQuestion() {
-  const q = shuffled[current];
+function showQuestion() {
+  const q = quizOrder[currentQ];
   document.getElementById("quizQ").textContent = q.q;
 
   q.options.forEach((opt, i) => {
     const btn = document.getElementById("opt" + i);
     btn.textContent = opt;
-    btn.onclick = () => checkAnswer(i);
+    btn.style.display = "inline-block";
+    btn.onclick = () => answer(i);
   });
 
   document.getElementById("quizResult").textContent = "";
-  document.getElementById("scoreBox").textContent = `Score: ${score} / ${shuffled.length}`;
+  document.getElementById("scoreBox").textContent =
+    `Score: ${score} / ${quizOrder.length}`;
 }
 
-function checkAnswer(choice) {
-  const q = shuffled[current];
+function answer(choice) {
+  const q = quizOrder[currentQ];
   const result = document.getElementById("quizResult");
 
   if (choice === q.answer) {
@@ -98,14 +100,16 @@ function checkAnswer(choice) {
     result.textContent = "❌ Wrong. " + q.explain;
   }
 
-  current++;
-  if (current < shuffled.length) {
-    setTimeout(loadQuestion, 1200);
+  currentQ++;
+  if (currentQ < quizOrder.length) {
+    setTimeout(showQuestion, 1200);
   } else {
     setTimeout(() => {
-      result.textContent = `🎉 Quiz finished! Final score: ${score} / ${shuffled.length}`;
+      result.textContent =
+        `🎉 Finished! Final score: ${score} / ${quizOrder.length}`;
     }, 1200);
   }
 }
 
+/* IMPORTANT: start quiz AFTER page loads */
 document.addEventListener("DOMContentLoaded", startQuiz);
