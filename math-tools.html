@@ -21,7 +21,9 @@
 
   <main class="hero">
     <h1>Unit Converter</h1>
-    <p class="subtitle">Learn units by converting, remembering, and testing yourself.</p>
+    <p class="subtitle">
+      Learn units by converting, remembering, and testing yourself.
+    </p>
 
     <!-- TOOL -->
     <section>
@@ -47,23 +49,63 @@
 
     <!-- FLASHCARDS -->
     <section>
-      <h2>Flashcards (Remember the tricks)</h2>
-      <ul>
-        <li>1 m = 100 cm</li>
-        <li>1 km = 1000 m</li>
-        <li>1 m ≈ 3.28 ft</li>
-        <li>To go m → km, divide by 1000</li>
-      </ul>
+      <h2>Flashcards (Click to flip)</h2>
+      <div class="flashcards">
+
+        <div class="flashcard" onclick="flipCard(this)">
+          <div class="flashcard-inner">
+            <div class="flashcard-face">
+              How many centimeters are in 1 meter?
+            </div>
+            <div class="flashcard-face flashcard-back">
+              1 meter = 100 centimeters
+            </div>
+          </div>
+        </div>
+
+        <div class="flashcard" onclick="flipCard(this)">
+          <div class="flashcard-inner">
+            <div class="flashcard-face">
+              Kilometer to meter conversion?
+            </div>
+            <div class="flashcard-face flashcard-back">
+              1 kilometer = 1000 meters
+            </div>
+          </div>
+        </div>
+
+        <div class="flashcard" onclick="flipCard(this)">
+          <div class="flashcard-inner">
+            <div class="flashcard-face">
+              Trick: meter to feet
+            </div>
+            <div class="flashcard-face flashcard-back">
+              Multiply meters by 3.28
+            </div>
+          </div>
+        </div>
+
+        <div class="flashcard" onclick="flipCard(this)">
+          <div class="flashcard-inner">
+            <div class="flashcard-face">
+              Quick trick: m → km
+            </div>
+            <div class="flashcard-face flashcard-back">
+              Divide by 1000
+            </div>
+          </div>
+        </div>
+
+      </div>
     </section>
 
-    <!-- QUIZ -->
+    <!-- QUIZ (unchanged for now) -->
     <section>
       <h2>Quick Quiz</h2>
       <p><strong>Q:</strong> 500 cm equals how many meters?</p>
       <button onclick="checkAnswer(5)">5 m</button>
       <button onclick="checkAnswer(50)">50 m</button>
       <button onclick="checkAnswer(0.5)">0.5 m</button>
-
       <p id="quizResult"></p>
     </section>
   </main>

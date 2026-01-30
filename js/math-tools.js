@@ -28,3 +28,7 @@ function checkAnswer(answer) {
     result.textContent = "❌ Incorrect. Try again.";
   }
 }
+
+function flipCard(card) {
+  card.classList.toggle("flipped");
+}
