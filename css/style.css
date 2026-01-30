@@ -208,3 +208,30 @@ h1 {
   background: #3a86ff;
 }
 
+.flashcard {
+  background: #1c2541;
+  color: #fff;
+  padding: 1rem;
+  border-radius: 10px;
+  margin: 0.75rem 0;
+  cursor: pointer;
+  perspective: 1000px;
+}
+
+.flashcard .front,
+.flashcard .back {
+  transition: transform 0.4s;
+}
+
+.flashcard .back {
+  display: none;
+}
+
+.flashcard.flip .front {
+  display: none;
+}
+
+.flashcard.flip .back {
+  display: block;
+}
+
