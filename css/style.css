@@ -25,6 +25,7 @@ body {
 
 .topbar {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   padding: 14px 20px;
@@ -32,30 +33,47 @@ body {
 }
 
 .logo {
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   font-weight: 700;
 }
 
+nav {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
 nav a {
-  margin-right: 14px;
   text-decoration: none;
   color: var(--text);
   font-weight: 500;
 }
 
+nav a:hover {
+  text-decoration: underline;
+}
+
 nav button {
-  padding: 6px 10px;
+  background: none;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  padding: 4px 8px;
   cursor: pointer;
 }
 
 .hero {
   text-align: center;
-  padding: 80px 20px;
+  padding: 70px 20px;
+}
+
+.hero h1 {
+  font-size: 2.4rem;
+  margin-bottom: 10px;
 }
 
 .tagline {
   font-size: 1.2rem;
-  margin-top: -10px;
+  font-weight: 500;
 }
 
 .subtitle {
