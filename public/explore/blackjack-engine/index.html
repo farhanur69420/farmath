@@ -125,6 +125,12 @@
   .prompt { font-family:'Space Mono',monospace; font-size:10.5px; letter-spacing:.05em;
             color:var(--gold); text-align:center; margin-bottom:9px; text-transform:uppercase; }
 
+  .owner-seg { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin:10px 0 9px; }
+  .owner-btn { background:var(--surface2); border:1px solid var(--border); border-radius:10px;
+               padding:9px 3px; cursor:pointer; text-align:center; font-family:'Space Mono',monospace; }
+  .owner-btn .ol { display:block; font-size:9px; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); }
+  .owner-btn .oc { display:block; font-size:16px; font-weight:700; color:var(--text); margin-top:2px; }
+  .owner-btn.on { border-width:2px; padding:8px 2px; }
   .chips { display:flex; gap:5px; flex-wrap:wrap; margin-bottom:9px; }
   .chip { background:var(--surface2); border:1px solid var(--border); color:var(--muted);
           font-family:'Space Mono',monospace; font-size:9.5px; letter-spacing:.05em;
@@ -338,6 +344,7 @@
   <div class="card">
     <div class="sec-title">Cards <span class="hint" id="entry-hint"></span></div>
     <div id="table-body"></div>
+    <div class="owner-seg" id="owner-seg"></div>
     <div class="prompt" id="prompt">—</div>
     <div class="chips" id="target-chips"></div>
     <div class="keypad" id="keypad"></div>
@@ -472,7 +479,7 @@
 </div>
 
 <footer>
-  <p><b>Keyboard:</b> <span class="mono">A 2–9</span> a card, <span class="mono">0 / T / J / Q / K</span> a ten, <span class="mono">Backspace</span> undo, <span class="mono">N</span> new hand, <span class="mono">P</span> split, <span class="mono">Enter</span> hand done. Live mode adds <span class="mono">D</span> re-enter dealer, <span class="mono">O</span> other seats, <span class="mono">B</span> burn, <span class="mono">S</span> new shoe, <span class="mono">Space</span> reset timer.</p>
+  <p><b>Keyboard:</b> <span class="mono">Y</span> my cards, <span class="mono">D</span> dealer, <span class="mono">O</span> other players, then <span class="mono">A 2–9</span> for a card and <span class="mono">0 / T / J / Q / K</span> for a ten. <span class="mono">Backspace</span> undo, <span class="mono">N</span> new hand, <span class="mono">P</span> split, <span class="mono">Enter</span> hand done. Live mode adds <span class="mono">B</span> burn, <span class="mono">S</span> new shoe, <span class="mono">Space</span> reset timer.</p>
   <p style="margin-top:10px">Card counting only produces an edge against a physical shoe dealt down before it is shuffled, which in practice means a live-dealer table. Stake.com Originals and other RNG blackjack restore a full shoe before every hand, so no count of any kind carries information there — the Originals mode is built to answer perfectly rather than to pretend otherwise. This is an analysis tool for maths and probability, not advice to gamble. Gamble responsibly, and never with money you need.</p>
   <p style="margin-top:10px"><a href="https://mathify.us/explore">← Back to Explore</a></p>
 </footer>
@@ -563,7 +570,8 @@ const S = {
   hands: [ newHand() ],
   active: 0,
   others: [],
-  logOthers: false,
+  owner: 'dealer',              // whose card the next tap belongs to
+
   tally: new Array(10).fill(0),   // every card entered this session, all shoes
   tallyHands: 0,
   auditScope: 'shoe',
@@ -576,7 +584,7 @@ const S = {
 function snapshot(){
   S.history.push(JSON.stringify({
     seen:S.seen, order:S.order, unknown:S.unknown, dealer:S.dealer,
-    hands:S.hands, active:S.active, others:S.others, logOthers:S.logOthers,
+    hands:S.hands, active:S.active, others:S.others, owner:S.owner,
     tally:S.tally, tallyHands:S.tallyHands
   }));
   if (S.history.length > 400) S.history.shift();
@@ -601,8 +609,11 @@ function decisionCounts(){
     for (let i=0;i<10;i++) c[i] = Math.max(0, c[i] - S.seen[i]);
     return c;
   }
+  // Only what is face up on the table this hand — including the other seats,
+  // whose cards thin the shoe for this decision exactly like anyone else's.
   for (const r of S.dealer) c[r] = Math.max(0, c[r]-1);
   for (const h of S.hands) for (const r of h.cards) c[r] = Math.max(0, c[r]-1);
+  for (const r of S.others) c[r] = Math.max(0, c[r]-1);
   return c;
 }
 function totalCards(){ return S.rules.decks*52; }
@@ -1016,10 +1027,21 @@ function kellyBet(){
 /* ═══════════════════ INPUT ═══════════════════ */
 /* Where the next tap goes. This is what makes three taps enough: dealer
    upcard, your first card, your second card, with no target switching. */
-function nextTarget(){
-  if (S.mode === 'live' && S.logOthers) return 'other';
-  if (!S.dealer.length) return 'dealer';
-  return 'you';
+/* Card ownership. Your cards and the dealer's upcard drive the decision;
+   everyone else's only move the count. The selector is explicit so you are
+   never guessing where a tap landed, but it also advances itself off the
+   dealer's upcard so the common path stays three taps with no switching. */
+const OWNERS = [
+  ['you',    'My cards',      'var(--teal)',   'rgba(0,201,167,.14)'],
+  ['dealer', 'Dealer',        'var(--gold)',   'rgba(245,197,24,.14)'],
+  ['other',  'Other players', 'var(--purple)', 'rgba(168,85,247,.14)']
+];
+function nextTarget(){ return S.owner; }
+function setOwner(o){ if (S.owner === o) return; snapshot(); S.owner = o; render(); }
+function ownerCount(o){
+  if (o === 'dealer') return S.dealer.length;
+  if (o === 'other')  return S.others.length;
+  return S.hands.reduce((a,h) => a + h.cards.length, 0);
 }
 function addCard(rank){
   if (S.mode === 'live'){
@@ -1036,7 +1058,8 @@ function addCard(rank){
   if (S.mode === 'live'){ S.seen[rank]++; S.order.push(rank); }
   if (t === 'dealer'){
     S.dealer.push(rank);
-    if (S.dealer.length === 1) startClock();
+    // The upcard hands over to you; later dealer draws stay on the dealer.
+    if (S.dealer.length === 1){ startClock(); S.owner = 'you'; }
   } else if (t === 'other'){
     S.others.push(rank);
   } else {
@@ -1045,7 +1068,7 @@ function addCard(rank){
   }
   render();
 }
-function reenterDealer(){ snapshot(); S.logOthers = false; S.dealer = []; render(); }
+function clearDealer(){ snapshot(); S.dealer = []; S.owner = 'dealer'; render(); }
 function burnUnknown(){
   if (S.mode !== 'live' || cardsLeft() <= 0) return;
   snapshot(); S.unknown++; render();
@@ -1053,7 +1076,7 @@ function burnUnknown(){
 function newHandRound(){
   snapshot();
   if (S.dealer.length || S.hands.some(h => h.cards.length)) S.tallyHands++;
-  S.dealer = []; S.hands = [ newHand() ]; S.active = 0; S.others = []; S.logOthers = false;
+  S.dealer = []; S.hands = [ newHand() ]; S.active = 0; S.others = []; S.owner = 'dealer';
   stopClock(); render();
 }
 function clearTable(){
@@ -1062,7 +1085,7 @@ function clearTable(){
   for (const h of S.hands) for (const r of h.cards) onTable.push(r);
   for (const r of onTable) if (S.tally[r] > 0) S.tally[r]--;
   if (S.mode === 'live') for (const r of onTable) unsee(r);
-  S.dealer=[]; S.hands=[newHand()]; S.active=0; S.others=[]; S.logOthers=false;
+  S.dealer=[]; S.hands=[newHand()]; S.active=0; S.others=[]; S.owner='dealer';
   render();
 }
 function unsee(r){
@@ -1079,7 +1102,7 @@ function resetAudit(){
 }
 function newShoe(){
   snapshot(); resetShoeCounts();
-  S.dealer=[]; S.hands=[newHand()]; S.active=0; S.others=[]; S.logOthers=false;
+  S.dealer=[]; S.hands=[newHand()]; S.active=0; S.others=[]; S.owner='dealer';
   stopClock(); render();
   flashAlert('alert-shuffle','good','New shoe. Every count reset to zero.');
 }
@@ -1107,7 +1130,7 @@ function handDone(){
   if (next >= 0) S.active = next;
   render();
 }
-function toggleLogOthers(){ snapshot(); S.logOthers = !S.logOthers; render(); }
+
 
 /* ═══════════════════ ACT CLOCK ═══════════════════ */
 const clock = { left:0, id:null };
@@ -1421,7 +1444,7 @@ function renderTable(){
   const t = nextTarget();
   let h = '';
   const hole = S.dealer.length === 1;
-  h += '<div class="hand-line' + (t==='dealer'?' active':'') + '">'
+  h += '<div class="hand-line' + (t==='dealer'?' active':'') + '" data-own="dealer">'
     +  '<span class="hand-who">Dealer</span><span class="hand-cards">' + cardsHtml(S.dealer, hole) + '</span>'
     +  '<span class="hand-tot" style="color:var(--muted)">'
     +  (!S.dealer.length ? '—' : hole ? RK[S.dealer[0]] + ' up' : handTotal(S.dealer)) + '</span></div>';
@@ -1437,14 +1460,16 @@ function renderTable(){
       +  '<span class="hand-tot" style="color:' + col + '">' + ts + '</span></div>';
   });
 
-  if (S.mode === 'live'){
-    h += '<div class="hand-line' + (t==='other'?' active':'') + '">'
-      +  '<span class="hand-who">Others</span><span class="hand-cards">' + cardsHtml(S.others, false) + '</span>'
-      +  '<span class="hand-tot" style="color:var(--muted)">' + (S.others.length||'—') + '</span></div>';
-  }
+  h += '<div class="hand-line' + (t==='other'?' active':'') + '" data-own="other">'
+    +  '<span class="hand-who">Others</span><span class="hand-cards">' + cardsHtml(S.others, false) + '</span>'
+    +  '<span class="hand-tot" style="color:var(--muted)">' + (S.others.length||'—') + '</span></div>';
+
   $('table-body').innerHTML = h;
   $('table-body').querySelectorAll('[data-hand]').forEach(el => {
-    el.onclick = () => { S.active = +el.dataset.hand; S.logOthers = false; render(); };
+    el.onclick = () => { snapshot(); S.active = +el.dataset.hand; S.owner = 'you'; render(); };
+  });
+  $('table-body').querySelectorAll('[data-own]').forEach(el => {
+    el.onclick = () => setOwner(el.dataset.own);
   });
 }
 
@@ -1454,24 +1479,31 @@ function renderInput(){
   const h = S.hands[S.active];
 
   let p;
-  if (t === 'other') p = 'logging other seats — tap their cards';
-  else if (t === 'dealer') p = "tap the dealer's upcard";
-  else if (!h.cards.length) p = 'tap your first card';
-  else if (h.cards.length === 1) p = 'tap your second card';
-  else p = 'tap any card you draw';
+  if (t === 'other') p = "tapping into OTHER PLAYERS — every card you can see";
+  else if (t === 'dealer') p = S.dealer.length ? "tapping into DEALER — draw cards" : "tap the dealer's upcard";
+  else if (!h.cards.length) p = 'tapping into MY CARDS — your first card';
+  else if (h.cards.length === 1) p = 'tapping into MY CARDS — your second card';
+  else p = 'tapping into MY CARDS — any card you draw';
   $('prompt').textContent = p;
-  $('entry-hint').textContent = live
-    ? (S.hands.length > 1 ? 'tap a hand to switch' : 'other seats can wait until after you act')
-    : 'three taps to an answer';
+  $('entry-hint').textContent = S.hands.length > 1
+    ? 'tap a hand above to switch'
+    : 'pick a section, then tap cards';
 
-  $('target-chips').innerHTML = live
-    ? '<button class="chip' + (S.logOthers?' on':'') + '" id="ch-other">Log other seats</button>'
-      + '<button class="chip" id="ch-redeal">Re-enter dealer</button>'
-    : '';
-  if (live){
-    $('ch-other').onclick = toggleLogOthers;
-    $('ch-redeal').onclick = reenterDealer;
-  }
+  $('owner-seg').innerHTML = OWNERS.map(([id,label,col,bg]) => {
+    const on = S.owner === id;
+    return '<button class="owner-btn' + (on?' on':'') + '" data-own="' + id + '"'
+      + (on ? ' style="border-color:' + col + ';background:' + bg + '"' : '') + '>'
+      + '<span class="ol"' + (on ? ' style="color:' + col + '"' : '') + '>' + label + '</span>'
+      + '<span class="oc"' + (on ? ' style="color:' + col + '"' : '') + '>' + ownerCount(id) + '</span>'
+      + '</button>';
+  }).join('');
+  $('owner-seg').querySelectorAll('[data-own]').forEach(el => {
+    el.onclick = () => setOwner(el.dataset.own);
+  });
+
+  $('target-chips').innerHTML = S.dealer.length
+    ? '<button class="chip" id="ch-cleardealer">Clear dealer</button>' : '';
+  if (S.dealer.length) $('ch-cleardealer').onclick = clearDealer;
 
   const cnt = decisionCounts();
   const tot = cnt.reduce((a,b)=>a+b,0) || 1;
@@ -2039,7 +2071,7 @@ function setMode(mode){
   // record cannot carry over.
   S.tally = new Array(10).fill(0); S.tallyHands = 0;
   S.auditScope = (mode === 'live') ? 'shoe' : 'session';
-  S.dealer=[]; S.hands=[newHand()]; S.active=0; S.others=[]; S.logOthers=false; S.history=[];
+  S.dealer=[]; S.hands=[newHand()]; S.active=0; S.others=[]; S.owner='dealer'; S.history=[];
   stopClock();
   bsCache.clear();
   resetChart();
@@ -2050,7 +2082,8 @@ function setMode(mode){
 
 const METHOD = `
 <p><b>Two modes, because they are two different problems.</b> A game that restores a full shoe before every hand cannot be counted — not badly, not at all — so <i>Originals / CSM</i> drops every counting display and spends everything on answering instantly and exactly, plus a full strategy chart generated from your rules. A real shoe dealt down behind a cut card <i>can</i> be counted, so <i>Live tables</i> tracks every card at the table including the other seats, and sizes your bet from the edge that creates.</p>
-<p style="margin-top:9px"><b>Three taps.</b> One keypad, and the engine routes each tap itself: dealer upcard, your first card, your second card. The answer is up before you have moved your hand. Cards you draw afterwards go to the same place, so hit-and-decide is one tap per card. At a live table the other seats are bookkeeping, not decision input — log them <i>after</i> you have acted with <b>Log other seats</b>, and the count catches up without costing you the clock. The action timer mirrors what the table gives you, so you can see the margin you have.</p>
+<p style="margin-top:9px"><b>Three sections, one keypad.</b> Every card belongs to someone, and the engine treats the three differently: your cards and the dealer's upcard decide the hand, while the other seats only move the count. Pick a section — <i>My cards</i>, <i>Dealer</i>, <i>Other players</i> — and tap; the selector shows where the next card lands and each section counts what it holds, so you are never guessing. The dealer's upcard hands over to your cards by itself, which keeps the common path at three taps with no switching at all: dealer upcard, your first card, your second card, and the answer is up before you have moved your hand. Later dealer draws stay on the dealer, so nothing needs re-selecting at the end of a round.</p>
+<p style="margin-top:9px"><b>What to enter, and when.</b> Your cards and the dealer's upcard are the decision; enter those first and act. The other seats are bookkeeping — worth entering, because their cards thin the shoe exactly like anyone else's and shift the count, but not worth spending your action clock on. Enter them after you have played. At a full table that is the difference between three taps inside the timer and fourteen taps outside it.</p>
 <p style="margin-top:9px"><b>How the play is chosen.</b> For the dealer's upcard the engine builds the full probability distribution of the dealer's final total by recursion over every card the dealer can draw, weighted by the actual remaining composition and conditioned on the dealer not already holding a natural. Your hand is solved against that: standing is a direct sum, hitting recurses and takes the better of standing and drawing again at every node, doubling is one card at twice the stake, splitting recurses through resplits, split-ace restrictions and double-after-split. Highest expected value wins. There is no strategy chart inside the decision and no index numbers — the Illustrious 18 and every other deviation fall out of the arithmetic at the exact count where they become correct for the shoe in front of you.</p>
 <p style="margin-top:9px"><b>The chart is output, not input.</b> In Originals mode the same solver is run over every hand-versus-upcard cell in the background, in time-budgeted slices so the keypad never stalls, and the result is drawn as a chart. Change a rule and it is rebuilt. That is also how the badge works: in live mode a fresh-shoe run gives correct basic strategy for your rules, so a genuine count deviation can be labelled as one; in Originals mode a difference from the chart cell can only be a composition effect of the exact cards showing.</p>
 <p style="margin-top:9px"><b>Insurance</b> is decided on composition alone: it wins when the hole card is a ten, so it pays exactly when tens exceed one third of the remaining shoe. In a reshuffled game they never do, which is why the answer there is always decline.</p>
@@ -2132,9 +2165,10 @@ function boot(){
     if (k === 'n') { newHandRound(); e.preventDefault(); return; }
     if (k === 'p') { doSplit(); e.preventDefault(); return; }
     if (e.key === 'Enter') { handDone(); e.preventDefault(); return; }
+    if (k === 'y') { setOwner('you'); e.preventDefault(); return; }
+    if (k === 'd') { setOwner('dealer'); e.preventDefault(); return; }
+    if (k === 'o') { setOwner('other'); e.preventDefault(); return; }
     if (S.mode !== 'live') return;
-    if (k === 'd') { reenterDealer(); e.preventDefault(); return; }
-    if (k === 'o') { toggleLogOthers(); e.preventDefault(); return; }
     if (k === 'b') { burnUnknown(); e.preventDefault(); return; }
     if (k === 's') { newShoe(); e.preventDefault(); return; }
     if (k === ' ') { startClock(); e.preventDefault(); return; }
